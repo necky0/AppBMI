@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
         button_count.setOnClickListener(myhandler);
         mass_box = findViewById(R.id.mass);
         height_box = findViewById(R.id.height);
-        aSwitch = findViewById(R.id.switch_unit);
         result_box = findViewById(R.id.result);
+        aSwitch = findViewById(R.id.switch_unit);
 
         sp = getSharedPreferences("Dane BMI", MODE_PRIVATE);
         spe = sp.edit();
