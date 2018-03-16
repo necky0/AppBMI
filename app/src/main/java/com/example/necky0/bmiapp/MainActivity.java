@@ -2,7 +2,6 @@ package com.example.necky0.bmiapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,10 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.Map;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,14 +23,17 @@ public class MainActivity extends AppCompatActivity {
     TextView result_box;
     Switch aSwitch;
 
-    double mass;
-    double height;
+    TextView mass_unit;
+    TextView height_unite;
+
+    String mass;
+    String height;
     double result;
 
     boolean isEnglishUnit;
 
     SharedPreferences sp;
-    SharedPreferences.Editor spe;
+    Save save;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,43 +41,59 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         button_count = (Button) findViewById(R.id.button_count);
-        button_count.setOnClickListener(myhandler);
+        button_count.setOnClickListener(countButtonHandler);
+
         mass_box = findViewById(R.id.mass);
         height_box = findViewById(R.id.height);
         result_box = findViewById(R.id.result);
+        
+        mass_unit = findViewById(R.id.mass_unit);
+        height_unite = findViewById(R.id.height_unit);
+
         aSwitch = findViewById(R.id.switch_unit);
+        aSwitch.setOnClickListener(unitsSwitchHandler);
 
         sp = getSharedPreferences("Dane BMI", MODE_PRIVATE);
-        spe = sp.edit();
+        save = new Save(sp);
 
-        mass = (double)sp.getFloat("mass", 0);
-        height = (double)sp.getFloat("height",0);
-        isEnglishUnit = sp.getBoolean("switch", false);
-
-        spe.apply();
-
-        if (mass != 0) mass_box.setText(String.valueOf(mass));
-        if (height != 0) height_box.setText(String.valueOf(height));
-        if (isEnglishUnit) aSwitch.setChecked(true);
+        setVariables();
+        init();
     }
 
-    View.OnClickListener myhandler = new View.OnClickListener() {
+    private void setVariables() {
+        mass = save.getMass();
+        height = save.getHeight();
+        isEnglishUnit = save.getUnits();
+    }
+
+    private void getVariables() {
+        mass = mass_box.getText().toString();
+        height = height_box.getText().toString();
+        isEnglishUnit = aSwitch.isChecked();
+    }
+
+    private void init() {
+        if (toDouble(mass) != 0) mass_box.setText(save.getMass());
+        if (toDouble(height) != 0) height_box.setText(save.getHeight());
+        aSwitch.setChecked(save.getUnits());
+    }
+
+    private double toDouble(String str){
+        return Double.parseDouble(str);
+    }
+
+    View.OnClickListener countButtonHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            String m = mass_box.getText().toString();
-            String h = height_box.getText().toString();
+            getVariables();
 
-            if ("".equals(m) || "".equals(h)) {
-                result = 0.0;
+            if ("".equals(mass) || "".equals(height)) {
+                result = 0;
             } else {
-                mass = Double.parseDouble(m);
-                height = Double.parseDouble(h);
-
-                Switch s = findViewById(R.id.switch_unit);
-                if (s.isChecked()) result = count2(mass, height);
-                else result = count(mass, height);
+                if (isEnglishUnit) result = BMICount.englishUnits(toDouble(mass), toDouble(height));
+                else result = BMICount.polishUnits(toDouble(mass), toDouble(height));
             }
 
-            save();
+            save.save(mass, height, isEnglishUnit);
 
             Intent intent = new Intent(MainActivity.this, ShowBMI.class);
             intent.putExtra(EXTRA_MESSAGE, result);
@@ -87,27 +101,22 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public double count(double mass, double height) {
-        double r;
-        if (mass > 1 && mass < 500 && height > 0.3 && height <= 3) {
-            r = mass / (height * height);
-            r = (int)(r*100)/100.0;
-        } else {
-            r = 0.0;
-        }
-        return r;
-    }
+    View.OnClickListener unitsSwitchHandler = new View.OnClickListener() {
+        public void onClick(View v) {
+            mass_box.setText("");
+            height_box.setText("");
 
-    public double count2(double mass, double height) {
-        double r;
-        if (mass > 2 && mass < 1000 && height > 4 && height <= 120) {
-            r = mass / (height * height);
-            r = (int)(r*100*703)/100.0;
-        } else {
-            r = 0.0;
+            isEnglishUnit = aSwitch.isChecked();
+
+            if (isEnglishUnit) {
+                mass_unit.setText(R.string.mass_lb);
+                height_unite.setText(R.string.height_in);
+            } else {
+                mass_unit.setText(R.string.mass);
+                height_unite.setText(R.string.height);
+            }
         }
-        return r;
-    }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -118,33 +127,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+
+        getVariables();
+
         switch (item.getItemId()) {
             case R.id.about_me:
                 Intent intent = new Intent(MainActivity.this, AboutMe.class);
                 startActivity(intent);
-                save();
+                save.save(mass, height, isEnglishUnit);
                 return true;
             case R.id.save:
-                save();
+                save.save(mass, height, isEnglishUnit);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void save() {
-        String m = mass_box.getText().toString();
-        String h = height_box.getText().toString();
-        boolean b = aSwitch.isChecked();
 
-        mass = Double.parseDouble(m);
-        height = Double.parseDouble(h);
-
-        spe.putFloat("mass", (float)mass);
-        spe.putFloat("height", (float)height);
-        spe.putBoolean("switch", b);
-
-        spe.apply();
-    }
 }

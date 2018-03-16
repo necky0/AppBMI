@@ -4,11 +4,9 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="one">#ffFF7F7F</color>
-    <color name="two">#ff1bab42</color>
-    <color name="three">#ff7F0000</color>
-
-
+    <color name="one">#FF7F7F</color>
+    <color name="two">#1bab42</color>
+    <color name="three">#7F0000</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>

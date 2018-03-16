@@ -11,33 +11,37 @@ public class ShowBMI extends AppCompatActivity {
 
     public static final String ERROR = "Are you Human?";
 
-    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_bmi);
 
-        // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
         double result = intent.getDoubleExtra(MainActivity.EXTRA_MESSAGE, 0);
 
+        setText(result);
+        setBackground(result);
+    }
 
+    private void setText(double result) {
         TextView result_box = findViewById(R.id.textView);
         if (result != 0) {
-            result_box.setText(String.valueOf(result));
+            result_box.setText(BMICount.toString(result));
         } else {
             result_box.setText(ERROR);
         }
+    }
 
+    @SuppressLint("ResourceAsColor")
+    private void setBackground(double result) {
         ConstraintLayout layout = findViewById(R.id.background);
 
         if (result < 18.5) {
-            layout.setBackgroundColor(R.color.one);
+            layout.setBackgroundResource(R.color.one);
         } else if ( result < 25) {
-            layout.setBackgroundColor(R.color.two);
+            layout.setBackgroundResource(R.color.two);
         } else {
-            layout.setBackgroundColor(R.color.three);
+            layout.setBackgroundResource(R.color.three);
         }
-
     }
 }

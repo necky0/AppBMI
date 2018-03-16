@@ -14,6 +14,7 @@
         tools:context="com.example.necky0.bmiapp.MainActivity">
 
         <TextView
+            android:id="@+id/height_unit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -30,6 +31,7 @@
             android:inputType="numberDecimal" />
 
         <TextView
+            android:id="@+id/mass_unit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
