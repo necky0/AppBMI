@@ -77,16 +77,11 @@ public class MainActivity extends AppCompatActivity {
         if (toDouble(height) != 0) height_box.setText(save.getHeight());
         aSwitch.setChecked(save.getUnits());
 
-        if (isEnglishUnit) {
-            mass_unit.setText(R.string.mass_lb);
-            height_unite.setText(R.string.height_in);
-        } else {
-            mass_unit.setText(R.string.mass);
-            height_unite.setText(R.string.height);
-        }
+        setUnits();
     }
 
     private double toDouble(String str){
+        if ("".equals(str)) return 0;
         return Double.parseDouble(str);
     }
 
@@ -116,15 +111,19 @@ public class MainActivity extends AppCompatActivity {
 
             isEnglishUnit = aSwitch.isChecked();
 
-            if (isEnglishUnit) {
-                mass_unit.setText(R.string.mass_lb);
-                height_unite.setText(R.string.height_in);
-            } else {
-                mass_unit.setText(R.string.mass);
-                height_unite.setText(R.string.height);
-            }
+            setUnits();
         }
     };
+
+    public void setUnits() {
+        if (isEnglishUnit) {
+            mass_unit.setText(R.string.mass_lb);
+            height_unite.setText(R.string.height_in);
+        } else {
+            mass_unit.setText(R.string.mass);
+            height_unite.setText(R.string.height);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,6 +150,4 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }
