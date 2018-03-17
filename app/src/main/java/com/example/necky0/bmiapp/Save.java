@@ -3,9 +3,9 @@ package com.example.necky0.bmiapp;
 import android.content.SharedPreferences;
 
 public class Save {
-    private final String MASS = "mass1";
-    private final String HEIGHT = "height1";
-    private final String UNITS = "units1";
+    private final String MASS = "MASS";
+    private final String HEIGHT = "HEIGHT";
+    private final String UNITS = "UNITS";
 
     private SharedPreferences sp;
     private SharedPreferences.Editor spe;

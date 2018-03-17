@@ -46,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
         mass_box = findViewById(R.id.mass);
         height_box = findViewById(R.id.height);
         result_box = findViewById(R.id.result);
-        
+
         mass_unit = findViewById(R.id.mass_unit);
         height_unite = findViewById(R.id.height_unit);
 
         aSwitch = findViewById(R.id.switch_unit);
         aSwitch.setOnClickListener(unitsSwitchHandler);
 
-        sp = getSharedPreferences("Dane BMI", MODE_PRIVATE);
+        sp = getSharedPreferences("DATA", MODE_PRIVATE);
         save = new Save(sp);
 
         setVariables();
@@ -76,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
         if (toDouble(mass) != 0) mass_box.setText(save.getMass());
         if (toDouble(height) != 0) height_box.setText(save.getHeight());
         aSwitch.setChecked(save.getUnits());
+
+        if (isEnglishUnit) {
+            mass_unit.setText(R.string.mass_lb);
+            height_unite.setText(R.string.height_in);
+        } else {
+            mass_unit.setText(R.string.mass);
+            height_unite.setText(R.string.height);
+        }
     }
 
     private double toDouble(String str){
