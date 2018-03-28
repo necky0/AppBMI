@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         isEnglishUnit = sp.getBoolean(UNITS, false);
     }
 
-    private void saveData(double mass, double height, boolean isEnglishUnit){
+    private void saveData(){
         spe.putFloat(MASS, (float) mass);
         spe.putFloat(HEIGHT, (float) height);
         spe.putBoolean(UNITS, isEnglishUnit);
@@ -89,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
     private void initUI() {
         if (mass != 0) mass_box.setText(String.format(Locale.US, FORMAT, mass));
         if (height != 0) height_box.setText(String.format(Locale.US, FORMAT, height));
-        switch_unit.setChecked(isEnglishUnit);
 
-        setUnits();
+        getInputUnit();
+        setUnitUI();
     }
 
-    public void setUnits() {
+    public void setUnitUI() {
         if (isEnglishUnit) {
             mass_unit.setText(R.string.mass_lb);
             height_unit.setText(R.string.height_in);
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getInput(){
+    private void getInputs(){
         String massTemp = mass_box.getText().toString();
         String heightTemp = height_box.getText().toString();
 
@@ -114,16 +114,20 @@ public class MainActivity extends AppCompatActivity {
         if ("".equals(heightTemp)) height = 0;
         else height = Double.parseDouble(heightTemp);
 
+        getInputUnit();
+    }
+
+    private void getInputUnit(){
         isEnglishUnit = switch_unit.isChecked();
     }
 
     View.OnClickListener countButtonHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            getInput();
+            getInputs();
 
             double result = BMICount.count(mass, height, isEnglishUnit);
             
-            saveData(mass, height, isEnglishUnit);
+            saveData();
 
             ShowBMI.start(MainActivity.this, result);
         }
@@ -132,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
     View.OnClickListener unitsSwitchHandler = new View.OnClickListener() {
         public void onClick(View v) {
             clearInputs();
-            isEnglishUnit = switch_unit.isChecked();
-            setUnits();
+            getInputUnit();
+            setUnitUI();
         }
     };
     
@@ -156,8 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 AboutMe.start(MainActivity.this);
                 return true;
             case R.id.save:
-                getInput();
-                saveData(mass, height, isEnglishUnit);
+                getInputs();
+                saveData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
