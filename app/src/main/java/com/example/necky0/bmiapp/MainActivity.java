@@ -1,6 +1,5 @@
 package com.example.necky0.bmiapp;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,117 +12,136 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
+    public static final String MASS = "MASS";
+    public static final String HEIGHT = "HEIGHT";
+    public static final String UNITS = "UNITS";
+    public static final String FORMAT = "%.2f";
 
-    public static final String EXTRA_MESSAGE = "Result";
+    private Button button_count;
+    private Switch switch_unit;
+    private EditText mass_box;
+    private EditText height_box;
+    private TextView mass_unit;
+    private TextView height_unit;
 
-    Button button_count;
-    EditText mass_box;
-    EditText height_box;
-    TextView result_box;
-    Switch aSwitch;
+    private double mass;
+    private double height;
+    private boolean isEnglishUnit;
 
-    TextView mass_unit;
-    TextView height_unite;
-
-    String mass;
-    String height;
-    double result;
-
-    boolean isEnglishUnit;
-
-    SharedPreferences sp;
-    Save save;
+    private SharedPreferences sp;
+    private SharedPreferences.Editor spe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button_count = (Button) findViewById(R.id.button_count);
-        button_count.setOnClickListener(countButtonHandler);
+        initFindViews();
+        initOnClickListeners();
+        initSharedPreferences();
 
-        mass_box = findViewById(R.id.mass);
-        height_box = findViewById(R.id.height);
-        result_box = findViewById(R.id.result);
+        initUI();
+    }
+
+    private void initSharedPreferences() {
+        sp = getSharedPreferences("DATA", MODE_PRIVATE);
+        spe = sp.edit();
+
+        loadData();
+
+        spe.apply();
+    }
+
+    private void loadData(){
+        mass = (double) sp.getFloat(MASS, 0);
+        height = (double) sp.getFloat(HEIGHT, 0);
+        isEnglishUnit = sp.getBoolean(UNITS, false);
+    }
+
+    private void saveData(double mass, double height, boolean isEnglishUnit){
+        spe.putFloat(MASS, (float) mass);
+        spe.putFloat(HEIGHT, (float) height);
+        spe.putBoolean(UNITS, isEnglishUnit);
+
+        spe.apply();
+    }
+    
+    private void initFindViews(){
+        button_count = findViewById(R.id.button_count);
+
+        mass_box = findViewById(R.id.mass_box);
+        height_box = findViewById(R.id.height_box);
 
         mass_unit = findViewById(R.id.mass_unit);
-        height_unite = findViewById(R.id.height_unit);
+        height_unit = findViewById(R.id.height_unit);
 
-        aSwitch = findViewById(R.id.switch_unit);
-        aSwitch.setOnClickListener(unitsSwitchHandler);
-
-        sp = getSharedPreferences("DATA", MODE_PRIVATE);
-        save = new Save(sp);
-
-        setVariables();
-        init();
+        switch_unit = findViewById(R.id.switch_unit);
+    }    
+    
+    private void initOnClickListeners(){
+        button_count.setOnClickListener(countButtonHandler);
+        switch_unit.setOnClickListener(unitsSwitchHandler);
     }
 
-    private void setVariables() {
-        mass = save.getMass();
-        height = save.getHeight();
-        isEnglishUnit = save.getUnits();
-    }
-
-    private void getVariables() {
-        mass = mass_box.getText().toString();
-        height = height_box.getText().toString();
-        isEnglishUnit = aSwitch.isChecked();
-    }
-
-    private void init() {
-        if (toDouble(mass) != 0) mass_box.setText(save.getMass());
-        if (toDouble(height) != 0) height_box.setText(save.getHeight());
-        aSwitch.setChecked(save.getUnits());
+    private void initUI() {
+        if (mass != 0) mass_box.setText(String.format(Locale.US, FORMAT, mass));
+        if (height != 0) height_box.setText(String.format(Locale.US, FORMAT, height));
+        switch_unit.setChecked(isEnglishUnit);
 
         setUnits();
     }
 
-    private double toDouble(String str){
-        if ("".equals(str)) return 0;
-        return Double.parseDouble(str);
+    public void setUnits() {
+        if (isEnglishUnit) {
+            mass_unit.setText(R.string.mass_lb);
+            height_unit.setText(R.string.height_in);
+        } else {
+            mass_unit.setText(R.string.mass);
+            height_unit.setText(R.string.height);
+        }
+    }
+
+    private void getInput(){
+        String massTemp = mass_box.getText().toString();
+        String heightTemp = height_box.getText().toString();
+
+        if ("".equals(massTemp)) mass = 0;
+        else mass = Double.parseDouble(massTemp);
+
+        if ("".equals(heightTemp)) height = 0;
+        else height = Double.parseDouble(heightTemp);
+
+        isEnglishUnit = switch_unit.isChecked();
     }
 
     View.OnClickListener countButtonHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            getVariables();
+            getInput();
 
-            if ("".equals(mass) || "".equals(height)) {
-                result = 0;
-            } else {
-                if (isEnglishUnit) result = BMICount.englishUnits(toDouble(mass), toDouble(height));
-                else result = BMICount.polishUnits(toDouble(mass), toDouble(height));
-            }
+            double result = BMICount.count(mass, height, isEnglishUnit);
+            
+            saveData(mass, height, isEnglishUnit);
 
-            save.save(mass, height, isEnglishUnit);
-
-            Intent intent = new Intent(MainActivity.this, ShowBMI.class);
-            intent.putExtra(EXTRA_MESSAGE, result);
-            startActivity(intent);
+            ShowBMI.start(MainActivity.this, result);
         }
     };
 
     View.OnClickListener unitsSwitchHandler = new View.OnClickListener() {
         public void onClick(View v) {
-            mass_box.setText("");
-            height_box.setText("");
-
-            isEnglishUnit = aSwitch.isChecked();
-
+            clearInputs();
+            isEnglishUnit = switch_unit.isChecked();
             setUnits();
         }
     };
-
-    public void setUnits() {
-        if (isEnglishUnit) {
-            mass_unit.setText(R.string.mass_lb);
-            height_unite.setText(R.string.height_in);
-        } else {
-            mass_unit.setText(R.string.mass);
-            height_unite.setText(R.string.height);
-        }
+    
+    public void clearInputs() {
+        mass_box.setText("");
+        height_box.setText("");
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,20 +149,16 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
-
-
+    
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        getVariables();
+        getInput();
 
         switch (item.getItemId()) {
             case R.id.about_me:
-                Intent intent = new Intent(MainActivity.this, AboutMe.class);
-                startActivity(intent);
-                save.save(mass, height, isEnglishUnit);
+                AboutMe.start(MainActivity.this);
                 return true;
             case R.id.save:
-                save.save(mass, height, isEnglishUnit);
+                saveData(mass, height, isEnglishUnit);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

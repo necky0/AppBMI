@@ -4,9 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="one">#FF7F7F</color>
-    <color name="two">#1bab42</color>
-    <color name="three">#7F0000</color>
+    <color name="light_red">#FF7F7F</color>
+    <color name="green">#1bab42</color>
+    <color name="dark_red">#7F0000</color>
+    <color name="default_color">#07f8ff</color>
 
     <color name="black_overlay">#66000000</color>
 </resources>
