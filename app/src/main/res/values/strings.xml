@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">BMI App</string>
-    <string name="mass">MASS</string>
-    <string name="height">HEIGHT</string>
+    <string name="mass">MASS [kg]</string>
+    <string name="height">HEIGHT [m]</string>
+    <string name="mass_lb">MASS [lb]</string>
+    <string name="height_in">HEIGHT [in]</string>
     <string name="count">COUNT</string>
     <string name="error">Wrong parameters!</string>
 

@@ -14,13 +14,14 @@
         tools:context="com.example.necky0.bmiapp.MainActivity">
 
         <TextView
+            android:id="@+id/height_unit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/height" />
 
         <EditText
-            android:id="@+id/height"
+            android:id="@+id/height_box"
             android:freezesText="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,13 +31,14 @@
             android:inputType="numberDecimal" />
 
         <TextView
+            android:id="@+id/mass_unit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/mass" />
 
         <EditText
-            android:id="@+id/mass"
+            android:id="@+id/mass_box"
             android:freezesText="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,14 +62,5 @@
             android:layout_weight="1"
             android:text="@string/unit" />
 
-        <TextView
-            android:id="@+id/result"
-            android:freezesText="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text=""
-            android:textAlignment="center" />
     </LinearLayout>
 </ScrollView>

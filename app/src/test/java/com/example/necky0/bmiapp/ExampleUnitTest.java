@@ -16,16 +16,12 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void count_isCorrect() throws Exception {
-        MainActivity main = new MainActivity();
-
-        assertEquals(22.530, main.count(69, 1.75), 0.001);
+    public void polishUnits_isCorrect() throws Exception {
+        assertEquals(22.530, BMICount.polishUnits(69, 1.75), 0.001);
     }
 
     @Test
-    public void count2_isCorrect() throws Exception {
-        MainActivity main = new MainActivity();
-
-        assertEquals(23.43, main.count2(120, 60), 0.001);
+    public void englishUnits_isCorrect() throws Exception {
+        assertEquals(23.433, BMICount.englishUnits(120, 60), 0.001);
     }
 }
