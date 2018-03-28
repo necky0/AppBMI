@@ -151,13 +151,12 @@ public class MainActivity extends AppCompatActivity {
     }
     
     public boolean onOptionsItemSelected(MenuItem item) {
-        getInput();
-
         switch (item.getItemId()) {
             case R.id.about_me:
                 AboutMe.start(MainActivity.this);
                 return true;
             case R.id.save:
+                getInput();
                 saveData(mass, height, isEnglishUnit);
                 return true;
             default:
